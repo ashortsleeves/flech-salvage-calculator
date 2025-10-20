@@ -1,6 +1,7 @@
 import { useState } from "react";
 import FileUploader from "./components/FileUploader";
 import { parseFlechsExport } from "./utils/parseFlechs";
+// import { mechList } from './mech-list.json';
 
 export default function App() {
   const [mechs, setMechs] = useState([]);
@@ -26,7 +27,7 @@ export default function App() {
               <li key={i}>
                 {l.loc}:{" "}
                 {l.destroyed ? "💀 Destroyed" : l.damaged ? "⚠️ Damaged" : "✅ Intact"}{" "}
-                (Armor {l.armorDamage}, Internal {l.internalDamage})
+                (Armor {l.armorDamage}/{l.armorDefault}, Internal {l.internalDamage})
               </li>
             ))}
           </ul>

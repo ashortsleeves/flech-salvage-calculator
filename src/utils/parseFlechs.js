@@ -10,7 +10,7 @@ export function parseFlechsExport(data) {
     const crits = sheet.crits || {};
     const src = sheet.meta?.srcMTF || "";
 
-    // 1️⃣ Parse equipment layout from srcMTF
+    // Parse equipment layout from srcMTF
     const sections = {};
     let currentSection = null;
     src.split("\n").forEach((line) => {
@@ -28,7 +28,18 @@ export function parseFlechsExport(data) {
       }
     });
 
-    // 2️⃣ Compute armor/internal damage
+    const armorMTF = [];
+    src.split("\n").forEach((line) => {
+      line = line.trim();
+      if (!line) return;
+
+      if (line.includes(" Armor:")) {
+        console.log(line);
+        armorMTF.push(line);
+      }
+    });
+
+    // Compute armor/internal damage
     const armorDamage = Object.values(armor)
       .map((p) => p?.damage || 0)
       .reduce((a, b) => a + b, 0);
@@ -37,16 +48,40 @@ export function parseFlechsExport(data) {
       .map((p) => p?.damage || 0)
       .reduce((a, b) => a + b, 0);
 
-    // 3️⃣ Identify damaged/destroyed limbs
+    // Identify damaged/destroyed limbs
     const limbStatus = Object.keys({ ...armor, ...internal }).map((loc) => {
-      const a = armor[loc]?.damage || 0;
+      let a = armor[loc]?.damage || 0;
+      let armorDefault = "";
       const i = internal[loc]?.damage || 0;
+      
+      //NEEDS REWORK
       const destroyed = i > 0;
       const damaged = a > 0 && !destroyed;
-      return { loc: loc.toUpperCase(), damaged, destroyed, armorDamage: a, internalDamage: i };
+
+
+      src.split("\n").forEach((line) => {
+        line = line.trim();
+        if (!line) return;
+        let location = loc;
+
+        if (loc === "LTR") {
+          location = "RTL";
+        }
+        if (loc === "CTR") {
+          location = "RTC";
+        }
+
+        if (line.includes(location + " Armor:")) {
+          const match = line.match(/Armor:\s*(\d+)/);
+          armorDefault = parseInt(match[1], 10);
+          a = armorDefault - a;
+        }
+      });
+
+      return { loc: loc.toUpperCase(), damaged, destroyed,   armorDefault: armorDefault, armorDamage: a, internalDamage: i };
     });
 
-    // 4️⃣ Map equipment by damage state
+    // Map equipment by damage state
     const equipmentByLoc = Object.entries(sections).map(([loc, items]) => {
       const destroyed = limbStatus.find((l) => l.loc === loc.toUpperCase())?.destroyed;
       const damaged = limbStatus.find((l) => l.loc === loc.toUpperCase())?.damaged;
@@ -62,7 +97,7 @@ export function parseFlechsExport(data) {
       };
     });
 
-    // 5️⃣ Pilot summary
+    // Pilot summary
     const pilotStatus =
       pilot?.wounds?.some((w) => w !== "ok") ? "WOUNDED" : "OK";
 
@@ -74,6 +109,7 @@ export function parseFlechsExport(data) {
         piloting: pilot?.piloting ?? "?",
         status: pilotStatus,
       },
+      armorMTF,
       armorDamage,
       internalDamage,
       limbStatus,
