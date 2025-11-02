@@ -1,4 +1,28 @@
 // src/utils/parseFlechs.js
+
+import isTable from "./internal-structure-table.json";
+
+function mapLocToISType(loc) {
+  loc = loc.toUpperCase();
+
+  // REAR TORSO collapse to same class as front torso
+  if (loc === "CTR") return "CT";
+  if (loc === "LTR" || loc === "RTR") return "ST";
+
+  // FRONT
+  if (loc === "CT") return "CT";
+  if (loc === "LT" || loc === "RT") return "ST";
+
+  // ARMS and LEGS
+  if (loc === "LA" || loc === "RA") return "ARM";
+  if (loc === "LL" || loc === "RL") return "LEG";
+
+  if (loc === "HD") return "HEAD";
+
+  return null;
+}
+
+
 export function parseFlechsExport(data) {
   if (!data?.sheets) return [];
 
@@ -49,37 +73,45 @@ export function parseFlechsExport(data) {
       .reduce((a, b) => a + b, 0);
 
     // Identify damaged/destroyed limbs
-    const limbStatus = Object.keys({ ...armor, ...internal }).map((loc) => {
-      let a = armor[loc]?.damage || 0;
-      let armorDefault = "";
-      const i = internal[loc]?.damage || 0;
-      
-      //NEEDS REWORK
-      const destroyed = i > 0;
-      const damaged = a > 0 && !destroyed;
+const limbStatus = Object.keys({ ...armor, ...internal }).map((loc) => {
+  let a = armor[loc]?.damage || 0;
+  let armorDefault = "";
+  const i = internal[loc]?.damage || 0;
 
+  // Armor default lookup
+  src.split("\n").forEach((line) => {
+    line = line.trim();
+    if (!line) return;
 
-      src.split("\n").forEach((line) => {
-        line = line.trim();
-        if (!line) return;
-        let location = loc;
+    if (line.includes(loc + " Armor:")) {
+      const match = line.match(/Armor:\s*(\d+)/);
+      armorDefault = parseInt(match[1], 10);
+      a = armorDefault - a; // remaining armor
+    }
+  });
 
-        if (loc === "LTR") {
-          location = "RTL";
-        }
-        if (loc === "CTR") {
-          location = "RTC";
-        }
+  // INTERNAL default lookup
+  const mechMass = sheet?.meta?.mass;
+  const isKey = mapLocToISType(loc);
+  const internalDefault = isTable[mechMass]?.[isKey] ?? 0;
+  const internalRemaining = internalDefault - i;
 
-        if (line.includes(location + " Armor:")) {
-          const match = line.match(/Armor:\s*(\d+)/);
-          armorDefault = parseInt(match[1], 10);
-          a = armorDefault - a;
-        }
-      });
+  // destroyed actually means fully stripped internal
+  const destroyed = internalRemaining <= 0;
+  const damaged = !destroyed && (a < armorDefault || i > 0);
 
-      return { loc: loc.toUpperCase(), damaged, destroyed,   armorDefault: armorDefault, armorDamage: a, internalDamage: i };
-    });
+  return {
+    loc: loc.toUpperCase(),
+    armorDefault,
+    armorDamage: a,
+    internalDamage: i,
+    internalDefault,
+    internalRemaining,
+    destroyed,
+    damaged,
+  };
+});
+
 
     // Map equipment by damage state
     const equipmentByLoc = Object.entries(sections).map(([loc, items]) => {

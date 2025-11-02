@@ -27,7 +27,7 @@ export default function App() {
               <li key={i}>
                 {l.loc}:{" "}
                 {l.destroyed ? "💀 Destroyed" : l.damaged ? "⚠️ Damaged" : "✅ Intact"}{" "}
-                (Armor {l.armorDamage}/{l.armorDefault}, Internal {l.internalDamage})
+                (Armor {l.armorDamage}/{l.armorDefault}, Internal {l.internalRemaining}/{l.internalDefault}
               </li>
             ))}
           </ul>
