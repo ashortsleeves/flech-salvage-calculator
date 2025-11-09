@@ -114,28 +114,97 @@ const limbStatus = Object.keys({ ...armor, ...internal }).map((loc) => {
 });
 
 
+
+
+
+
+    function normalizeEquipLoc(loc) {
+      loc = loc.toUpperCase();
+
+      if (loc.startsWith("LEFT ARM")) return "LA";
+      if (loc.startsWith("RIGHT ARM")) return "RA";
+      if (loc.startsWith("LEFT LEG")) return "LL";
+      if (loc.startsWith("RIGHT LEG")) return "RL";
+      if (loc.startsWith("LEFT TORSO")) return "LT";
+      if (loc.startsWith("RIGHT TORSO")) return "RT";
+      if (loc.startsWith("CENTER TORSO")) return "CT";
+      if (loc.startsWith("HEAD")) return "HD";
+
+      return loc;
+    }
+
     // Map equipment by damage state
     const equipmentByLoc = Object.entries(sections).map(([loc, items]) => {
-      const destroyed = limbStatus.find((l) => l.loc === loc.toUpperCase())?.destroyed;
-      const damaged = limbStatus.find((l) => l.loc === loc.toUpperCase())?.damaged;
-      const critKeys = Object.keys(crits).filter((key) => key.startsWith(loc.slice(0, 2).toUpperCase()));
+      const normLoc = normalizeEquipLoc(loc);
+      const limb = limbStatus.find((l) => l.loc === normLoc);
+
+      const destroyed = limb?.destroyed;
+      const damaged = limb?.damaged;
+      const critKeys = Object.keys(crits).filter((key) => key.startsWith(normLoc.slice(0, 2)));
       const critHits = critKeys.length > 0;
+
+   const destroyedItemFlags = items.map(item => destroyed ? true : false);
 
       return {
         loc,
-        items,
+        items: items.map((item, idx) => ({
+          name: item,
+          destroyed: destroyedItemFlags[idx]
+        })),
         destroyed,
         damaged,
         critHits,
       };
     });
+
+
+
+
+
+
+
+
+
+    // // Map equipment by damage state
+    // const equipmentByLoc = Object.entries(sections).map(([loc, items]) => {
+    //   const destroyed = limbStatus.find((l) => l.loc === loc.toUpperCase())?.destroyed;
+    //   const damaged = limbStatus.find((l) => l.loc === loc.toUpperCase())?.damaged;
+    //   const critKeys = Object.keys(crits).filter((key) => key.startsWith(loc.slice(0, 2).toUpperCase()));
+    //   const critHits = critKeys.length > 0;
+
+    //   const destroyedItemFlags = items.map(item => destroyed ? true : false);
+
+    //   return {
+    //     loc,
+    //     items: items.map((item, idx) => ({
+    //       name: item,
+    //       destroyed: destroyedItemFlags[idx]
+    //     })),
+    //     destroyed,
+    //     damaged,
+    //     critHits,
+    //   };
+    // });
+
+
+
+
+
+
+
+
+    
   const defaultTotalArmor = limbStatus.reduce((sum, l) => sum + (l.armorDefault || 0), 0);
   const defaultTotalInternal = limbStatus.reduce((sum, l) => sum + (l.internalDefault || 0), 0);
 
   const totalArmorRemaining = limbStatus.reduce((sum, l) => sum + (l.armorDamage || 0), 0);
   const totalInternalRemaining = limbStatus.reduce((sum, l) => sum + (l.internalRemaining || 0), 0);
+
+  const armorDamageAmount = defaultTotalArmor - totalArmorRemaining;
+  const internalDamageAmount = defaultTotalInternal - totalInternalRemaining;
+  
     // Pilot summary
-    const pilotStatus =
+  const pilotStatus =
       pilot?.wounds?.some((w) => w !== "ok") ? "WOUNDED" : "OK";
 
   return {
@@ -155,6 +224,8 @@ const limbStatus = Object.keys({ ...armor, ...internal }).map((loc) => {
     defaultTotalInternal,
     totalArmorRemaining,
     totalInternalRemaining,
+    armorDamageAmount,
+    internalDamageAmount,
   };
   });
 }
