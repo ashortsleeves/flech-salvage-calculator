@@ -121,9 +121,14 @@ const limbStatus = Object.keys({ ...armor, ...internal }).map((loc) => {
       const critKeys = Object.keys(crits).filter((key) => key.startsWith(loc.slice(0, 2).toUpperCase()));
       const critHits = critKeys.length > 0;
 
+      const destroyedItemFlags = items.map(item => destroyed ? true : false);
+
       return {
         loc,
-        items,
+        items: items.map((item, idx) => ({
+          name: item,
+          destroyed: destroyedItemFlags[idx]
+        })),
         destroyed,
         damaged,
         critHits,
@@ -134,8 +139,12 @@ const limbStatus = Object.keys({ ...armor, ...internal }).map((loc) => {
 
   const totalArmorRemaining = limbStatus.reduce((sum, l) => sum + (l.armorDamage || 0), 0);
   const totalInternalRemaining = limbStatus.reduce((sum, l) => sum + (l.internalRemaining || 0), 0);
+
+  const armorDamageAmount = defaultTotalArmor - totalArmorRemaining;
+  const internalDamageAmount = defaultTotalInternal - totalInternalRemaining;
+  
     // Pilot summary
-    const pilotStatus =
+  const pilotStatus =
       pilot?.wounds?.some((w) => w !== "ok") ? "WOUNDED" : "OK";
 
   return {
@@ -155,6 +164,8 @@ const limbStatus = Object.keys({ ...armor, ...internal }).map((loc) => {
     defaultTotalInternal,
     totalArmorRemaining,
     totalInternalRemaining,
+    armorDamageAmount,
+    internalDamageAmount,
   };
   });
 }
