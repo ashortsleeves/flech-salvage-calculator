@@ -111,23 +111,40 @@ const limbStatus = Object.keys({ ...armor, ...internal }).map((loc) => {
     damaged,
   };
 });
+function normalizeEquipLoc(loc) {
+  loc = loc.toUpperCase();
+
+  if (loc.startsWith("LEFT ARM")) return "LA";
+  if (loc.startsWith("RIGHT ARM")) return "RA";
+  if (loc.startsWith("LEFT LEG")) return "LL";
+  if (loc.startsWith("RIGHT LEG")) return "RL";
+  if (loc.startsWith("LEFT TORSO")) return "LT";
+  if (loc.startsWith("RIGHT TORSO")) return "RT";
+  if (loc.startsWith("CENTER TORSO")) return "CT";
+  if (loc.startsWith("HEAD")) return "HD";
+
+  return loc;
+}
 
 
-    // Map equipment by damage state
-    const equipmentByLoc = Object.entries(sections).map(([loc, items]) => {
-      const destroyed = limbStatus.find((l) => l.loc === loc.toUpperCase())?.destroyed;
-      const damaged = limbStatus.find((l) => l.loc === loc.toUpperCase())?.damaged;
-      const critKeys = Object.keys(crits).filter((key) => key.startsWith(loc.slice(0, 2).toUpperCase()));
-      const critHits = critKeys.length > 0;
+const equipmentByLoc = Object.entries(sections).map(([loc, items]) => {
+  const normLoc = normalizeEquipLoc(loc);
+  const limb = limbStatus.find((l) => l.loc === normLoc);
 
-      return {
-        loc,
-        items,
-        destroyed,
-        damaged,
-        critHits,
-      };
-    });
+  const destroyed = limb?.destroyed;
+  const damaged = limb?.damaged;
+  const critKeys = Object.keys(crits).filter((key) => key.startsWith(normLoc.slice(0, 2)));
+  const critHits = critKeys.length > 0;
+
+  return {
+    loc, // original text still shown to user which is nice
+    items,
+    destroyed,
+    damaged,
+    critHits,
+  };
+});
+
 
     // Pilot summary
     const pilotStatus =
