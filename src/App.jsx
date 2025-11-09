@@ -20,6 +20,9 @@ export default function App() {
           <p><b>Pilot:</b> Gunnery {mech.pilot.gunnery}, Piloting {mech.pilot.piloting} ({mech.pilot.status})</p>
           <p><b>Total Armor Damage:</b> {mech.armorDamage}</p>
           <p><b>Total Internal Damage:</b> {mech.internalDamage}</p>
+          <p><b>Armor Remaining:</b> {((mech.totalArmorRemaining / mech.defaultTotalArmor) * 100).toFixed(1)}%</p>
+          <p><b>Internal Remaining:</b> {((mech.totalInternalRemaining / mech.defaultTotalInternal) * 100).toFixed(1)}%</p>
+
 
           <h3 className="mt-3 font-semibold">Limb Status</h3>
           <ul className="ml-4">
