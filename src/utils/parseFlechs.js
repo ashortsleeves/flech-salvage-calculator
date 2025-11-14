@@ -1,6 +1,6 @@
 // src/utils/parseFlechs.js
 
-import isTable from "./internal-structure-table.json";
+import isTable from "./internal-structure-table.json" assert { type: "json" };
 
 function mapLocToISType(loc) {
   loc = loc.toUpperCase();
@@ -210,6 +210,7 @@ const limbStatus = Object.keys({ ...armor, ...internal }).map((loc) => {
   return {
     name,
     mass: sheet?.meta?.mass || "N/A",
+    srcMTF: src,
     pilot: {
       gunnery: pilot?.gunnery ?? "?",
       piloting: pilot?.piloting ?? "?",
