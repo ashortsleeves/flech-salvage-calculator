@@ -1,0 +1,147 @@
+{
+  "description": "BattleTech equipment costs in C-Bills. Most costs are based on mech tonnage or specific formulas.",
+  "version": "1.0",
+  "source": "BattleTech Construction Rules / Total Warfare",
+  
+  "fixedCosts": {
+    "Cockpit": 200000,
+    "Life Support": 50000,
+    "Heat Sink": 2000,
+    "IS Double Heat Sink": 6000,
+    "CLDoubleHeatSink": 6000,
+    "Endo Steel": 3140,
+    "Ferro-Fibrous": 20000
+  },
+  
+  "perTonnageCosts": {
+    "comment": "Multiply these values by the mech's tonnage to get the actual cost",
+    "Sensors": 2000,
+    "Shoulder": 80,
+    "Upper Arm Actuator": 100,
+    "Lower Arm Actuator": 50,
+    "Hand Actuator": 80,
+    "Hip": 80,
+    "Upper Leg Actuator": 150,
+    "Lower Leg Actuator": 80,
+    "Foot Actuator": 120
+  },
+  
+  "perPointCosts": {
+    "comment": "Multiply by the number of points of armor or internal structure",
+    "Standard": 625,
+    "Ferro-Fibrous Armor": 781,
+    "Standard Internal Structure": 250,
+    "Endo Steel Structure": 3140
+  },
+  
+  "formulas": {
+    "Fusion Engine": {
+      "formula": "(5000 * engineRating * mechTonnage) / 75",
+      "description": "Engine cost based on rating and mech tonnage"
+    },
+    "Gyro": {
+      "formula": "300000 * gyroTonnage",
+      "description": "Gyro tonnage = ceil(engineRating / 100)"
+    },
+    "Jump Jet": {
+      "formula": "200 * (jumpJetCount^2) * mechTonnage",
+      "description": "Cost increases quadratically with number of jump jets"
+    }
+  },
+  
+  "weaponCosts": {
+    "comment": "Common weapon costs in C-Bills",
+    "Medium Laser": 40000,
+    "Small Laser": 11250,
+    "Large Laser": 100000,
+    "ER Large Laser": 200000,
+    "ER Medium Laser": 80000,
+    "ER Small Laser": 11250,
+    "PPC": 200000,
+    "ER PPC": 300000,
+    "AC/2": 75000,
+    "AC/5": 125000,
+    "AC/10": 200000,
+    "AC/20": 300000,
+    "LRM 5": 30000,
+    "LRM 10": 100000,
+    "LRM 15": 175000,
+    "LRM 20": 250000,
+    "SRM 2": 10000,
+    "SRM 4": 60000,
+    "SRM 6": 80000,
+    "Streak SRM 2": 15000,
+    "ISStreakSRM2": 15000,
+    "Streak SRM 4": 90000,
+    "Streak SRM 6": 120000,
+    "Machine Gun": 5000,
+    "Flamer": 7500,
+    "Gauss Rifle": 300000,
+    "LB 10-X AC": 400000,
+    "Ultra AC/5": 200000,
+    "Ultra AC/10": 320000,
+    "Ultra AC/20": 480000,
+    "Rotary AC/2": 175000,
+    "Rotary AC/5": 275000,
+    "Arrow IV": 450000,
+    "Long Tom": 450000,
+    "Sniper": 300000,
+    "Thumper": 187500,
+    "Narc": 100000,
+    "TAG": 50000
+  },
+  
+  "ammoCosts": {
+    "comment": "Ammo costs per ton",
+    "IS Ammo LRM-15": 30000,
+    "IS Ammo LRM-15 Artemis-capable": 30000,
+    "IS Ammo LRM-20": 30000,
+    "IS Ammo LRM-10": 30000,
+    "IS Ammo LRM-5": 30000,
+    "IS Ammo SRM-2": 27000,
+    "IS Ammo SRM-4": 27000,
+    "IS Ammo SRM-6": 27000,
+    "IS Streak SRM 2 Ammo": 54000,
+    "IS Ammo AC/2": 1000,
+    "IS Ammo AC/5": 4500,
+    "IS Ammo AC/10": 6000,
+    "IS Ammo AC/20": 10000,
+    "IS Ammo MG - Full": 1000,
+    "Gauss Ammo": 20000
+  },
+  
+  "equipmentCosts": {
+    "comment": "Other equipment costs",
+    "CASE": 50000,
+    "CASEII": 175000,
+    "ISArtemisIV": 100000,
+    "Artemis IV FCS": 100000,
+    "C3 Computer": 250000,
+    "C3 Master Computer": 1500000,
+    "Guardian ECM": 200000,
+    "Beagle Active Probe": 200000,
+    "MASC": 1000000,
+    "TSM": 16000,
+    "Targeting Computer": 10000,
+    "AMS": 100000,
+    "Anti-Missile System": 100000
+  },
+  
+  "engineTypes": {
+    "Fusion Engine": 1.0,
+    "Light Fusion Engine": 1.5,
+    "XL Engine": 2.0,
+    "Compact Fusion Engine": 1.5,
+    "ICE Engine": 0.1
+  },
+  
+  "repairMultipliers": {
+    "comment": "Multipliers for repair vs replacement",
+    "armor_repair": 1.0,
+    "internal_repair": 1.0,
+    "component_destroyed": 1.0,
+    "component_damaged": 0.5,
+    "critical_hit": 0.25
+  }
+}
+
