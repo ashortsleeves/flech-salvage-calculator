@@ -66,7 +66,7 @@ export default function App() {
 
           <h3 className="mt-3 font-semibold">Equipment by Location</h3>
           {mech.equipmentByLoc.map((e, i) => (
-            <div key={i} className="ml-4 mb-2">
+            <div key={i} className={`ml-4 mb-2 flech-${e.loc.toLowerCase().replace(/\s+/g, '-')}`}>
               <b>{e.loc}</b>{" "}
               {e.destroyed
                 ? "💥 Destroyed"
